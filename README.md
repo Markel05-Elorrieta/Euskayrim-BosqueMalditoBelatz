@@ -24,26 +24,25 @@ La API estará disponible en `http://localhost:8000` y la documentación Swagger
 ```
 ├── ad/                  # Análisis de datos
 │   ├── data/            #   CSVs (crudo y limpio)
-│   ├── models/          #   Modelo de red neuronal (.h5)
-│   ├── notebooks/       #   Notebooks de exploración y entrenamiento
-│   └── utils/
-├── api/                 # API REST (FastAPI)
+│   ├── models/          #   Modelo de red neuronal
+│   └── notebooks/       #   Notebooks de exploración y entrenamiento
+├── api/                 # API REST -> FastAPI
 │   ├── app/
 │   │   ├── main.py          # Punto de entrada de la app
 │   │   ├── database.py      # Configuración SQLAlchemy
 │   │   ├── ml/              # Carga del modelo y preprocesado
 │   │   ├── models/          # ORM y dominio
-│   │   ├── routers/         # Endpoints (health, heroes, whatif)
+│   │   ├── routers/         # Endpoints (health, heroes, what-if, divine-call)
 │   │   ├── schemas/         # Esquemas Pydantic
-│   │   └── services/        # Lógica de negocio
+│   │   └── services/        # Lógica
 │   ├── static/              # Frontend (HTML/CSS/JS)
 │   └── tests/               # Tests
 ├── database/            # Scripts de inicialización y carga
 │   ├── init_db.py
 │   ├── populate_db.py
 │   └── schema.sql
-├── docs/                # Documentación adicional
-├── run_api.py           # Launcher con Uvicorn
+├── docs/                # Informe
+├── run_api.py           # Iniciador de la API con Uvicorn
 └── requirements.txt
 ```
 
@@ -151,7 +150,7 @@ Log de consultas **What-If** al Oráculo (modelo de red neuronal). Registra la c
 
 ### Relaciones
 
-- **heroes ↔ incursiones** — Relación muchos-a-muchos a través de `incursion_heroes`. Un héroe puede participar en múltiples incursiones y cada incursión tiene 4 héroes.
+- **heroes ↔ incursiones** — Relación N-M a través de `incursion_heroes`. Un héroe puede participar en múltiples incursiones y cada incursión tiene 4 héroes.
 - **predicciones** — Tabla independiente (sin FKs). Actúa como log de auditoría de las predicciones del modelo What-If.
 
 ---
@@ -173,7 +172,7 @@ El código también define clases de dominio puro (sin ORM) en `api/app/models/d
 |----------|------------------|--------------------------------------------------|
 | GET      | `/`              | Mensaje de bienvenida                            |
 | GET      | `/health`        | Estado de la API                                 |
-| GET/POST | `/heroes`        | GET de todos los héroes                          |
+| GET      | `/heroes`        | GET de todos los héroes                          |
 | POST     | `/what-if`       | Predicción What-If con el modelo de red neuronal |
 | POST     | `/divine-call`   | Devuelve la mejor combinación de héroes y bendición óptima por dificultad |
 
