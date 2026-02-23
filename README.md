@@ -17,6 +17,8 @@ python run_api.py
 
 La API estará disponible en `http://localhost:8000` y la documentación Swagger UI en `/docs`.
 
+Con la API iniciada, puedes acceder al frontend en `http://localhost:8000/static`.
+
 ---
 
 ## Estructura del proyecto
