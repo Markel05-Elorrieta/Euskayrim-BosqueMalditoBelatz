@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euskayrim - El Oráculo de Markel y Arian</title>
+    <link rel="icon" type="image/png" href="images/ojo_oraculo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Partículas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-fog"></div>
+        <div class="header-content">
+            <div class="logo-rune">&#x2726;</div>
+            <h1 class="title-main">
+                <span class="rune-decoration">&#x2721;</span>
+                Euskayrim
+                <span class="rune-decoration">&#x2721;</span>
+            </h1>
+            <p class="subtitle">El Oráculo que predice el destino de tus incursiones</p>
+            <div class="header-divider">
+                <span class="divider-rune">&#x2756;</span>
+                <span class="divider-line"></span>
+                <span class="divider-rune">&#x2756;</span>
+            </div>
+            <p class="subtitle-authors">Forjado por Markel &amp; Arian</p>
+            <span>Peio apruébame</span>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="container">
+        <!-- Estado del reino (API) -->
+        <section id="status-section" class="card card-status">
+            <div class="card-corner card-corner-tl"></div>
+            <div class="card-corner card-corner-tr"></div>
+            <div class="card-corner card-corner-bl"></div>
+            <div class="card-corner card-corner-br"></div>
+            <h2><i class="bi bi-shield-fill-check"></i> Estado del Reino</h2>
+            <div class="status-grid">
+                <div id="api-status" class="api-status">
+                    <span class="status-indicator" id="status-dot"></span>
+                    <span id="status-text">Comprobando conexión...</span>
+                </div>
+                <div id="model-status" class="api-status">
+                    <span class="status-indicator" id="model-dot"></span>
+                    <span id="model-text">Comprobando modelo...</span>
+                </div>
+            </div>
+            <button id="check-api-btn" class="btn btn-outline"><i class="bi bi-arrow-clockwise"></i> Recargar</button>
+        </section>
+
+        <!-- Conjuro What-If -->
+        <section id="whatif-section" class="card card-main">
+            <div class="card-corner card-corner-tl"></div>
+            <div class="card-corner card-corner-tr"></div>
+            <div class="card-corner card-corner-bl"></div>
+            <div class="card-corner card-corner-br"></div>
+            <div class="card-glow"></div>
+            <h2><i class="bi bi-book-half"></i> Conjuro What-If</h2>
+            <p class="section-description">
+                Selecciona a tus 4 héroes y distribuye los 5 puntos de la <strong>Bendición de Ilargi</strong>
+                para conocer la probabilidad de éxito de tu incursión
+            </p>
+
+            <form id="whatif-form" class="whatif-form">
+                <!-- Selección de héroes -->
+                <div class="form-group">
+                    <div class="form-group-header">
+                        <label class="form-label"><i class="bi bi-people-fill"></i> Selecciona 4 héroes:</label>
+                        <button type="button" id="reload-heroes-btn" class="btn btn-outline btn-sm"><i class="bi bi-arrow-clockwise"></i> Recargar</button>
+                    </div>
+                    <div class="heroes-grid" id="heroes-grid">
+                        <!-- Los héroes se cargarán dinámicamente desde la API -->
+                    </div>
+                    <div id="hero-error" class="error-message" style="display: none;">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Debes seleccionar exactamente 4 héroes
+                    </div>
+                </div>
+
+                <!-- Distribución de la bendición de Ilargi (por héroe) -->
+                <div class="form-group">
+                    <label class="form-label"><i class="bi bi-moon-stars-fill"></i> Bendición de Ilargi (+5 puntos por héroe)</label>
+                    <p class="helper-text">Distribuye 5 puntos extra en los atributos de cada héroe seleccionado (total = 20)</p>
+                    <div id="hero-points-container">
+                        <!-- Se generan dinámicamente paneles por cada héroe seleccionado -->
+                    </div>
+                    <div id="points-error" class="error-message" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="bi bi-hurricane"></i> Dificultad:</label>
+                    <div class="difficulty-btn-group" id="dificultad-group">
+                        <button type="button" class="difficulty-btn active" data-value="1">
+                            <span class="difficulty-number">1</span>
+                            <span class="difficulty-label">Fácil</span>
+                        </button>
+                        <button type="button" class="difficulty-btn" data-value="2">
+                            <span class="difficulty-number">2</span>
+                            <span class="difficulty-label">Normal</span>
+                        </button>
+                        <button type="button" class="difficulty-btn" data-value="3">
+                            <span class="difficulty-number">3</span>
+                            <span class="difficulty-label">Difícil</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botón invocar Oráculo -->
+                <button type="submit" class="btn btn-primary btn-large btn-oracle">
+                    <span class="btn-oracle-icon">&#x2726;</span>
+                    <span>Invocar al Oráculo</span>
+                    <span class="btn-oracle-icon">&#x2726;</span>
+                </button>
+            </form>
+
+            <!-- Resultado Oráculo -->
+            <div id="result-container" class="result-container" style="display: none;">
+                <div class="result-card">
+                    <div class="result-card-glow"></div>
+                    <h3><i class="bi bi-eye-fill"></i> Visión del Oráculo</h3>
+                    <div class="result-content">
+                        <div class="result-item">
+                            <span class="result-label"><i class="bi bi-percent"></i> Probabilidad de éxito</span>
+                            <span id="probabilidad" class="result-value">--%</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label"><i class="bi bi-chat-quote-fill"></i> Recomendación</span>
+                            <span id="recomendacion" class="result-value">--</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label"><i class="bi bi-trophy-fill"></i> Predicción</span>
+                            <span id="prediccion" class="result-value">--</span>
+                        </div>
+                    </div>
+                    <div id="result-visual" class="result-visual">
+                        <div class="result-visual-fill"></div>
+                        <div class="result-visual-marker"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Llamada divina  -->
+        <section id="divine-section" class="card card-divine">
+            <div class="card-corner card-corner-tl"></div>
+            <div class="card-corner card-corner-tr"></div>
+            <div class="card-corner card-corner-bl"></div>
+            <div class="card-corner card-corner-br"></div>
+            <h2><i class="bi bi-stars"></i> Conjuro de la llamada divina</h2>
+            <p class="section-description">
+                Explora automáticamente todas las combinaciones posibles para encontrar el mejor equipo
+            </p>
+
+            <!-- Selector de dificultad -->
+            <div class="form-group">
+                <label class="form-label"><i class="bi bi-hurricane"></i> Dificultad:</label>
+                <div class="difficulty-btn-group" id="divine-dificultad-group">
+                    <button type="button" class="difficulty-btn active" data-value="1">
+                        <span class="difficulty-number">1</span>
+                        <span class="difficulty-label">Fácil</span>
+                    </button>
+                    <button type="button" class="difficulty-btn" data-value="2">
+                        <span class="difficulty-number">2</span>
+                        <span class="difficulty-label">Normal</span>
+                    </button>
+                    <button type="button" class="difficulty-btn" data-value="3">
+                        <span class="difficulty-number">3</span>
+                        <span class="difficulty-label">Difícil</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botón invocar llamada divina -->
+            <button type="button" id="divine-btn" class="btn btn-primary btn-large btn-oracle btn-divine">
+                <span class="btn-oracle-icon">&#x2726;</span>
+                <span>Invocar llamada divina</span>
+                <span class="btn-oracle-icon">&#x2726;</span>
+            </button>
+
+            <!-- Cargando llamada divina -->
+            <div id="divine-loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>El Oráculo está evaluando todas las combinaciones...</p>
+            </div>
+
+            <!-- Resultado llamada divina -->
+            <div id="divine-result" class="divine-result" style="display: none;">
+                <h3><i class="bi bi-trophy-fill"></i> Resultado llamada divina</h3>
+                <div id="best-team-details" class="result-content"></div>
+                <div id="divine-all-combos" class="divine-combos-list"></div>
+            </div>
+        
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-rune">&#x2726;</div>
+            <p class="footer-title">Proyecto Final — Euskayrim</p>
+            <p class="footer-authors">Desarrollado por Markel y Arian</p>
+            <div class="footer-runes">
+                <span>&#x2721;</span>
+                <span>&#x2756;</span>
+                <span>&#x2721;</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="js/app.js"></script>
+    <script src="js/particles.js"></script>
+</body>
+
+</html>

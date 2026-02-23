@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pandas
+numpy
+scikit-learn
+joblib
+sqlalchemy
+pydantic
+pydantic[email]
+pytest
+tensorflow
+matplotlib
+seaborn
+shap
